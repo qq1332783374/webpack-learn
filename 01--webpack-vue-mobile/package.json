@@ -1,0 +1,12 @@
+{
+  "name": "01--webpack-vue-mobile",
+  "version": "1.0.0",
+  "description": "## 前言 学习和使用`vue` 差不多一年了，至今还不是很了解全家桶之中的 `vue-cli`, `cli`现在都已经出到四版本，然而我对 2.x 版本还不是很了解。为了更好的学习，于是就开学习`webpack`的配置。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
