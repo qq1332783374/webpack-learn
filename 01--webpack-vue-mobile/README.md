@@ -1,4 +1,4 @@
-# 新手webpack配置学习
+# 新手上路-webpack配置学习
 
 ## 前言
 学习和使用`vue` 差不多一年了，至今还不是很了解全家桶之中的 `vue-cli`, `cli`现在都已经出到四版本，然而我对 2.x 版本还不是很了解。为了更好的学习，于是就开学习`webpack`的配置。
@@ -609,4 +609,95 @@ npm install webpack-dev-server -D
 
 
 安装完成后，配置 `build/webpack.confi.js`：
+
+```javascript
+// 引入 webpack 模块
+const webpack = require('webpack')
+
+// 在插件项 plugins 添加上
+new webpack.NamedModulesPlugin(),
+new webpack.HotModuleReplacementPlugin()
+
+// 添加新的一项 devServer 内容如下
+devServer: {
+  host: 'localhost',
+  port: '8088',
+  hot: true,
+  compress: true
+}
+```
+
+以上配置完成之后就去修改一下 `package.json` 里面的 `dev` 启动命令，内容如下：
+
+```json
+"scripts": {
+    "dev": "webpack-dev-server --inline --color --progress --config ./build/webpack.config.js"
+  }
+```
+
+然后重新的 `npm run dev` 一下
+
+![13](/Users/tanshangbiao/Learn/02--学习/02--webpack/00-素材相关/13.png)
+
+出现 `Compiled successfully` 就表示热重载已经生效啦！ 由于在 `devServer`项配置的端口是 `8088` ， 所以就 访问 `localhost:8088` 
+
+![14](/Users/tanshangbiao/Learn/02--学习/02--webpack/00-素材相关/14.png)
+
+优化点：
+
+1. 终端的打印信息看着和想象中的不大一样，决定把ta变成熟悉的样子
+
+   依赖相关：
+
+   * [friendly-errors-webpack-plugin](https://www.npmjs.com/package/friendly-errors-webpack-plugin) 主要是用于编译完成，终端显示的信息(个人理解)
+
+   安装命令：
+
+   ```
+   npm install friendly-errors-webpack-plugin --save-dev
+   ```
+
+   使用：
+
+   ```
+   // 引入依赖包
+   const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
+   
+   module.exports = {
+   	// 其他配置项
+   	...,
+     devServer: {
+       ...,
+       quiet: true // necessary for FriendlyErrorsPlugin
+     },
+     plugins: {
+       ...,
+       new FriendlyErrorsPlugin({
+           compilationSuccessInfo: {
+             // 暂时先写死地址和端口，后面优化会把相关配置抽离这个文件
+             messages: [`You application is running here http://localhost:8088`]
+           },
+           onErrors: function (severity, errors) {
+             // You can listen to errors transformed and prioritized by the plugin
+             // severity can be 'error' or 'warning'
+           },
+           // should the console be cleared between each compilation?
+           // default is true
+           clearConsole: true,
+   
+           // add formatters and transformers (see below)
+           additionalFormatters: [],
+           additionalTransformers: []
+         })
+     }	
+   }
+   ```
+
+   完成以上配置后，重新跑一次 `dev` 命令:
+
+   ![15](/Users/tanshangbiao/Learn/02--学习/02--webpack/00-素材相关/15.png)
+
+   成功输出想要的内容，舒服！！
+
+
 

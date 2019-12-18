@@ -3,6 +3,8 @@ const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 // 处理 .vue 文件
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
+// 打印信息
+const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 // 路径操作模块
 const path = require('path')
 
@@ -32,7 +34,8 @@ module.exports = {
     host: 'localhost',
     port: '8088',
     hot: true,
-    compress: true
+    compress: true,
+    quiet: true // necessary for FriendlyErrorsPlugin
   },
   resolve: {
     extensions: ['.js', '.vue', '.json', '.less'],
@@ -109,6 +112,22 @@ module.exports = {
     }),
     new VueLoaderPlugin(),
     new webpack.NamedModulesPlugin(),
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new FriendlyErrorsPlugin({
+      compilationSuccessInfo: {
+        messages: [`You application is running here http://localhost:8088`]
+      },
+      onErrors: function (severity, errors) {
+        // You can listen to errors transformed and prioritized by the plugin
+        // severity can be 'error' or 'warning'
+      },
+      // should the console be cleared between each compilation?
+      // default is true
+      clearConsole: true,
+     
+      // add formatters and transformers (see below)
+      additionalFormatters: [],
+      additionalTransformers: []
+    })
   ]
 }
