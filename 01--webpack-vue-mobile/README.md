@@ -283,20 +283,29 @@ npm i sass-loader node-sass css-loader style-loader -D
 在 `build/webpack.config.js` 添加相应规则：
 
 ```javascript
-{ // css相关处理
-  test: /\.(scss|sass)$/,
-  use: [
-    {
-      loader: "style-loader" // 将 JS 字符串生成为 style 节点
-    },
-    {
-      loader: "css-loader" // 将 CSS 转化成 CommonJS 模块
-    },
-    {
-      loader: "sass-loader" // 将 Sass 编译成 CSS
-    }
-  ]
+module.exports = {
+  ...,
+  module: {
+    rules: [
+      // ... 其它规则
+      { // css相关处理
+        test: /\.(scss|sass)$/,
+        use: [
+          {
+            loader: "style-loader" // 将 JS 字符串生成为 style 节点
+          },
+          {
+            loader: "css-loader" // 将 CSS 转化成 CommonJS 模块
+          },
+          {
+            loader: "sass-loader" // 将 Sass 编译成 CSS
+          }
+        ]
+      }
+    ]
+  }
 }
+
 ```
 
 测试配置的规则，新建文件夹和目录
@@ -360,15 +369,19 @@ npm install html-webpack-plugin -D
 // 1. 引入依赖
 let HtmlWebpackPlugin = require('html-webpack-plugin')
 
-// 2. 添加 plugins 插件项
-plugins: [ // 插件相关
-  new HtmlWebpackPlugin({
-    // 指定相关模板
-    template: resolve('../public/index.html'),
-    // 输出
-    filename: resolve('../dist/index.html')
-  })
-]
+module.exports = {
+  ...,
+  // 2. 添加 plugins 插件项
+  plugins: [ // 插件相关
+    new HtmlWebpackPlugin({
+      // 指定相关模板
+      template: resolve('../public/index.html'),
+      // 输出
+      filename: resolve('../dist/index.html')
+    })
+  ]
+}
+
 ```
 
 
@@ -399,28 +412,38 @@ npm install url-loader file-loader -D
 配置项：
 
 ```javascript
-{
-  test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
-  loader: 'url-loader',
-  options: {
-    limit: 10000,
-    name: 'images/[name].[has4].[ext]'
-  }
-},
-{
-  test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
-  loader: 'url-loader',
-  options: {
-    limit: 10000,
-    name: 'media/[name].[hash:7].[ext]'
-  }
-},
-{
-  test: /\.(woff|woff2?|eot|ttf|otf)(\?.*)?$/,
-  loader: 'url-loader',
-  options: {
-    limit: 10000,
-    name: 'fonts/[name].[hash:7].[ext]'
+module.exports = {
+  ...,
+  module: {
+    rules: [
+      // ... 其它规则
+      {
+        test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+        loader: 'url-loader',
+        options: {
+          limit: 10000,
+  				// 此处是个坑，这个参数要设置成false,不然生成图片的路径时[object Module]
+          esModule: false,
+          name: 'images/[name].[has4].[ext]'
+        }
+      },
+      {
+        test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
+        loader: 'url-loader',
+        options: {
+          limit: 10000,
+          name: 'media/[name].[hash:7].[ext]'
+        }
+      },
+      {
+        test: /\.(woff|woff2?|eot|ttf|otf)(\?.*)?$/,
+        loader: 'url-loader',
+        options: {
+          limit: 10000,
+          name: 'fonts/[name].[hash:7].[ext]'
+        }
+      }
+    ]
   }
 }
 ```
@@ -463,6 +486,7 @@ npm install -D vue-loader vue-template-compiler
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 module.exports = {
+  ...,
   module: {
     rules: [
       // ... 其它规则
@@ -539,14 +563,17 @@ module.exports = {
 给 `build/webpack.config.js` 添加新项:
 
 ```javascript
-resolve: {
-  // 配置这里，在import的时候就可以省略以下的文件后缀名
-  extensions: ['.js', '.vue', '.json', '.less'],
-  // @ 代表目录 src 好好体会一下
-  alias: {
-    '@': resolve('src')
+module.exports = {
+  ...,
+	resolve: {
+    // 配置这里，在import的时候就可以省略以下的文件后缀名
+    extensions: ['.js', '.vue', '.json', '.less'],
+    // @ 代表目录 src 好好体会一下
+    alias: {
+      '@': resolve('src')
+    }
   }
-},
+}
 ```
 
 
@@ -619,11 +646,14 @@ new webpack.NamedModulesPlugin(),
 new webpack.HotModuleReplacementPlugin()
 
 // 添加新的一项 devServer 内容如下
-devServer: {
-  host: 'localhost',
-  port: '8088',
-  hot: true,
-  compress: true
+module.exports = {
+  ...,
+  devServer: {
+    host: 'localhost',
+    port: '8088',
+    hot: true,
+    compress: true
+  }
 }
 ```
 
@@ -699,5 +729,34 @@ devServer: {
 
    成功输出想要的内容，舒服！！
 
+##### 3.2.9 小结
 
+配置到这里已经可以进行基本的开发了，不过距离完成的 `cli` 还是有点距离的。接下来是进行开发环境和生产环境的区分，还有生产环境打包相关的配置，最后就是优化打包速度之类的。
+
+
+
+##### 3.2.10 开发环境和生产环境
+
+简单了解一下这两个环境的区别：
+
+* 开发环境：为了方便开发提高效率，在开发环境我们需要一个实时性的功能以便我们开发，例如 ：热重载功能；（一下子不知道怎么讲了。。。反正开发环境就是方便开发-_-）
+* 生产环境：在生产环境中，更加注重的是性能方面的提升。例如在生产环境中，相关代码会被压缩，不再需要热重载功能，按需引入`cdn` ，开启 `gzip` 等等 。反正就是能提升一点性能的就提升一点。
+
+大概了解后就正式开工了，先来了解一下相关依赖:
+
+* [webpack-merge](https://www.npmjs.com/package/webpack-merge) 主要是用来合并`webpack` 相关配置
+* [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer) 打包文件分析工具
+
+* [clean-webpack-plugin](https://www.npmjs.com/package/clean-webpack-plugin) 主要是用于清理上一次打包文件
+* [copy-webpack-plugin](https://www.webpackjs.com/plugins/copy-webpack-plugin/ ) 不参与打包的静态资源复制
+* [@intervolga/optimize-cssnano-plugin](https://npm.taobao.org/package/@intervolga/optimize-cssnano-plugin) 抽离 `css` 进行压缩
+* [mini-css-extract-plugin](https://webpack.docschina.org/plugins/mini-css-extract-plugin) 用于把css单独抽离出来。
+
+安装命令：
+
+```
+npm i clean-webpack-plugin copy-webpack-plugin @intervolga/optimize-cssnano-plugin mini-css-extract-plugin webpack-merge webpack-bundle-analyzer -D
+```
+
+在配置这两个文件之前，还需要对 `webpack.config.js` 进行修改。
 

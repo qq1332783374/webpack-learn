@@ -1,4 +1,6 @@
 const webpack = require('webpack')
+// 清理上一次打包留下的文件
+const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 // 处理html入口模板插件
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 // 处理 .vue 文件
@@ -30,13 +32,13 @@ module.exports = {
     // 资源的引用路径（这个跟你打包上线的配置有关系）
     publicPath: '/'
   },
-  devServer: {
-    host: 'localhost',
-    port: '8088',
-    hot: true,
-    compress: true,
-    quiet: true // necessary for FriendlyErrorsPlugin
-  },
+  // devServer: {
+  //   host: 'localhost',
+  //   port: '8088',
+  //   hot: true,
+  //   compress: true,
+  //   quiet: true // necessary for FriendlyErrorsPlugin
+  // },
   resolve: {
     extensions: ['.js', '.vue', '.json', '.less'],
     alias: {
@@ -82,6 +84,9 @@ module.exports = {
         loader: 'url-loader',
         options: {
           limit: 10000,
+          // 这个参数要设置成false,不然生成图片的路径时[object Module]
+          esModule: false,
+          fallback: 'file-loader',
           name: 'images/[name].[hash:4].[ext]'
         }
       },
@@ -104,30 +109,14 @@ module.exports = {
     ]
   },
   plugins: [ // 插件相关
+    // 清理上一次打包痕迹
+    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       // 指定相关模板
       template: resolve('public/index.html'),
       // 输出
       filename: resolve('dist/index.html')
     }),
-    new VueLoaderPlugin(),
-    new webpack.NamedModulesPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
-    new FriendlyErrorsPlugin({
-      compilationSuccessInfo: {
-        messages: [`You application is running here http://localhost:8088`]
-      },
-      onErrors: function (severity, errors) {
-        // You can listen to errors transformed and prioritized by the plugin
-        // severity can be 'error' or 'warning'
-      },
-      // should the console be cleared between each compilation?
-      // default is true
-      clearConsole: true,
-     
-      // add formatters and transformers (see below)
-      additionalFormatters: [],
-      additionalTransformers: []
-    })
+    new VueLoaderPlugin()
   ]
 }

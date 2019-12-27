@@ -4,7 +4,8 @@
   "description": "## 前言 学习和使用`vue` 差不多一年了，至今还不是很了解全家桶之中的 `vue-cli`, `cli`现在都已经出到四版本，然而我对 2.x 版本还不是很了解。为了更好的学习，于是就开学习`webpack`的配置。",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack-dev-server --inline --color --progress --config ./build/webpack.config.js",
+    "dev": "webpack-dev-server --config ./build/webpack.dev.js",
+    "build": "webpack --config ./build/webpack.prod.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -18,23 +19,30 @@
     "@babel/plugin-transform-runtime": "^7.7.6",
     "@babel/preset-env": "^7.7.6",
     "@babel/runtime": "^7.7.6",
+    "@intervolga/optimize-cssnano-plugin": "^1.0.6",
     "autoprefixer": "^9.7.3",
     "babel-loader": "^8.0.6",
+    "clean-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^5.1.1",
     "css-loader": "^3.3.2",
     "file-loader": "^5.0.2",
     "friendly-errors-webpack-plugin": "^1.7.0",
     "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.8.2",
     "node-sass": "^4.13.0",
     "postcss-import": "^12.0.1",
     "postcss-loader": "^3.0.0",
     "sass-loader": "^8.0.0",
     "style-loader": "^1.0.2",
+    "uglifyjs-webpack-plugin": "^2.2.0",
     "url-loader": "^3.0.0",
     "vue-loader": "^15.8.3",
     "vue-style-loader": "^4.1.2",
     "vue-template-compiler": "^2.6.11",
     "webpack": "^4.41.2",
+    "webpack-bundle-analyzer": "^3.6.0",
     "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.9.0"
+    "webpack-dev-server": "^3.9.0",
+    "webpack-merge": "^4.2.2"
   }
 }
